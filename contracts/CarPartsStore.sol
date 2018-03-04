@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
  
-//import "./Base/Owned.sol";
-//import "./Base/SafeMath.sol";
+import "./base/Owned.sol";
+import "./base/SafeMath.sol";
  
 /**
     @notice This contract implements a simple store that can interact with
