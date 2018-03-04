@@ -2,17 +2,16 @@ pragma solidity ^0.4.18;
  
 import "./base/Owned.sol";
 import "./base/SafeMath.sol";
- 
+
 /**
     @notice This contract implements a simple store that can interact with
     registered customers. Every customer has its own shopping cart.
-    @title Honest Car Parts Store Contract
+    @title Retail Store Contract
     @author Edward Slavov
 */
 contract CarPartStore is Owned, SafeMath {
     // right data types bytes32 > string etc...
-   
-    address private owner; //// in owned ??
+    
     // address private oracle; ??
     mapping(address => Seller) private sellers;
     mapping(address => Customer) private customers;
@@ -50,7 +49,7 @@ contract CarPartStore is Owned, SafeMath {
     struct Part {
         // id??
         string[] pictures;
-        bytes32 type;
+        bytes32 _type;
         string description;
         uint256 price;
     }
@@ -67,38 +66,58 @@ contract CarPartStore is Owned, SafeMath {
     }
    
     /* Modifiers */
-    modifier isOwner() {
-        require(msg.sender == owner);
-        _;
-    }
    
     function CarPartStore() public {
         owner = msg.sender;
         // set name?
     }
    
-    /** //Needed?
+    /** 
+     * Needed?
         @notice Payable fallback
     */
-    function() payable { }
+    function() public payable { }
    
     // register seller
+    function registerSeller() public {
+        // sellers.add();
+    }
  
     // register customer
+    function registerCustomer() public {
+        // sellers.add();
+    }
    
     // cart functions??
  
     // add Car // PROBABLY NOT EDIT CAR, JUST DELETE?
+    function registerCar() public returns(bytes) {
+        // sellers.add();
+    }
    
     // del car
    
     // get car
    
     // func add part
-   
+    function addPart() public returns(bytes) {
+        // sellers.add();
+    }
+    
     // del part
    
     // get part
+    
+    function buyPart(bytes partHash) public payable returns(bytes) {
+        
+    }
+    
+    function withdrawRefund() public {
+        uint refund = 0;
+        //todo: require sender is customer and n days have passed 
+    
+        msg.sender.transfer(refund);
+    }
    
     // TODO: return part
    
@@ -109,4 +128,6 @@ contract CarPartStore is Owned, SafeMath {
     //todo ban seller and confiscate his balance if parts/car is stolen
    
     // fileComplaint for seller
+    
+    //rate seller after receiving item
 }
