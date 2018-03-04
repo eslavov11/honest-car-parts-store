@@ -13,16 +13,13 @@ export class AppComponent {
   title = 'app';
   picture: File = null;
 
-  constructor() {
-    IpfsUtils.IPFS_SERVER;
-  }
-
   fileChange(files: FileList): void {
     this.picture = files.item(0);
   }
 
   uploadPicture(): void {
-    // IpfsUtils.addFile(this.picture.
-    IpfsUtils.captureFile(this.picture);
+    IpfsUtils.addFile(this.picture).then(ipfsId => {
+      window.location.href = IpfsUtils.IPFS_SERVER + ipfsId;
+    });
   }
 }
