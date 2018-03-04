@@ -18,5 +18,9 @@
   <li>
     <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
   </li>
+
+  <input type="file" #fileupload [(ngModel)]="picture"
+         name="myFile" (change)="fileChange(fileupload.files)"/>
+  <button (click)="uploadPicture()">>Upload picture</button>
 </ul>
 
