@@ -9,6 +9,16 @@ export default class IpfsUtils {
 
   private static ipfs: any = ipfsApi('/ip4/127.0.0.1/tcp/5001');
 
+  public static addJsonAsFile(json) {
+    const file = new File([JSON.stringify(json)], 'file.json');
+
+    return new Promise(resolve => {
+      IpfsUtils.addFile(file).then(ipfsId => {
+        resolve(ipfsId);
+      });
+    });
+  }
+
   public static addFile(file) {
     return new Promise(resolve => {
       let reader = new (<any>window).FileReader();

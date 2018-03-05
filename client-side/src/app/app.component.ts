@@ -18,8 +18,11 @@ export class AppComponent {
   }
 
   uploadPicture(): void {
-    IpfsUtils.addFile(this.picture).then(ipfsId => {
-      window.location.href = IpfsUtils.IPFS_SERVER + ipfsId;
-    });
+    // IpfsUtils.addFile(this.picture).then(ipfsId => {
+    //   window.location.href = IpfsUtils.IPFS_SERVER + ipfsId;
+    // });
+
+    const json = {'picsIpfsHash': ['asdfasdfasdf', '2asdfasdfasdf', '2asdfasdfasdf']};
+
   }
 }
