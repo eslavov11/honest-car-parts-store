@@ -1,91 +1,3 @@
-pragma solidity ^0.4.18;
- 
-import "./base/Owned.sol";
-import "./base/SafeMath.sol";
-
-pragma solidity ^0.4.18;
-
-
-contract Owned {
-  address public owner;
-
-  function Owned() public {
-    owner = msg.sender;
-  }
-
-  modifier isOwner() {
-    require(msg.sender == owner);
-    _;
-  }
-
-  /**
-        @notice Changes the address of the store owner
-        @param  new_owner Address of the new owner
-  */
-  function transferOwnership(address new_owner) isOwner public {
-    if (new_owner != address(0) &&
-        new_owner != owner) {
-      owner = new_owner;
-    }
-  }
-
-}
-
-/**
-    @notice Safe mathematical operations contract
-*/
-contract SafeMath {
-  /**
-        @notice Safely subtract two numbers without overflows
-        @param x uint256 First operand
-        @param y uint256 Second operand
-        @return z Result
-  */
-  function safeSub(uint256 x, uint256 y) pure internal returns (uint256) {
-    assert(y <= x);
-    return x - y;
-  }
-  
-  /**
-        @notice Safely add two numbers without overflows
-        @param x uint256 First operand
-        @param y uint256 Second operand
-        @return uint256 Result
-  */
-  
-  function safeAdd(uint256 x, uint256 y) pure internal returns (uint256) {
-    uint256 z = x + y;
-    assert(z >= x);
-    return z;
-  }
-  
-  /**
-        @notice Safely multiply two numbers without overflows
-        @param x uint256 First operand
-        @param y uint256 Second operand
-        @return z uint256 Result
-  */
-  function safeMul(uint256 x, uint256 y) pure  internal returns (uint256) {
-    uint256 z = x * y;
-    assert(x == 0 || z / x == y);
-    return z;
-  }
-  /**
-        @notice Safely divide two numbers without overflows
-        @param x uint256 First operand
-        @param y uint256 Second operand
-        @return z uint256 Result
-  */
-  function safeDiv(uint256 x, uint256 y) pure  internal returns (uint256) {
-    uint256 z = x / y;
-    return z;
-  }
-
-}
- 
-//import "./Base/Owned.sol";
-//import "./Base/SafeMath.sol";
- 
 /**
     @notice This contract implements a simple store that can interact with
     registered customers. Every customer has its own shopping cart.
@@ -106,6 +18,7 @@ contract CarPartStore is Owned, SafeMath {
     mapping(uint256 => Order) private orders; 
     
     uint256 private customerPercentFee;
+    uint8 private daysForRespond;
     uint256 private carsCount;
     uint256 private partsCount;
     uint256 private ordersCount;
@@ -120,7 +33,7 @@ contract CarPartStore is Owned, SafeMath {
         string name;
         string shippingAddress;
         uint256 registrationDate;
-        uint256[] cars;
+        //TODO: remove?uint256[] cars;
         // reputation?
     }
     
@@ -137,36 +50,38 @@ contract CarPartStore is Owned, SafeMath {
         bytes32 vin;
         bytes32 make;
         bytes32 model;
+        string description;
         uint256 dateOfRegistration;
-        bytes picturesIpfsDir;
-        uint256[] soldParts;
+        bytes metaIpfsHash;
+        //uint256[] soldParts;
         address seller;
     }
    
     struct Part {
         uint256 id;
         bytes32 partType;
-        uint256 carId;
+        uint256 car;
         string description;
         uint256 price;
         uint8 daysForDelivery;
         bool sold;
-        bytes picturesIpfsDir;
+        bytes metaIpfsHash;
     }
     
     struct Order {
         uint256 id;
         uint256 partId;
-        uint256 date;
+        uint256 deliveryDate;
         address customer;
+        address seller;
         OrderStatus status;
     }
     
     enum OrderStatus {
-        Ordered,
-        Completed,
-        Rejected,
-        Refunded
+        Active,
+        Complete,
+        Reject,
+        Return
     }
    
     /* Modifiers */
@@ -176,7 +91,7 @@ contract CarPartStore is Owned, SafeMath {
     }
     
     modifier isCustomer() {
-        require(msg.sender == sellers[msg.sender].addr);
+        require(msg.sender == customers[msg.sender].addr);
         _;
     }
     
@@ -194,6 +109,42 @@ contract CarPartStore is Owned, SafeMath {
     
     modifier carIsNotInTheRegister(bytes32 vin) {
         require(carsByVin[vin] == 0);
+        _;
+    }
+    
+    modifier hasOrderedPart(uint256 orderId) {
+        require(msg.sender == customers[msg.sender].addr &&
+                msg.sender == orders[orderId].customer);
+        _;
+    }
+    
+    modifier hasSoldPart(uint256 orderId) {
+        require(msg.sender == sellers[msg.sender].addr &&
+                msg.sender == orders[orderId].seller);
+        _;
+    }
+    
+    modifier orderDeliveryDateExpired(uint256 orderId) {
+        require(now <= orders[orderId].deliveryDate + 
+                        parts[orders[orderId].partId].daysForDelivery * 1 seconds); //1 days
+        _;
+    }
+    
+    modifier orderDeliveryDateWithResponseExpired(uint256 orderId) {
+        require(now <= orders[orderId].deliveryDate + 
+                     (parts[orders[orderId].partId].daysForDelivery + daysForRespond) * 1 seconds); //1 days
+        _;
+    }
+    
+    modifier orderIsActive(uint256 orderId) {
+        require(orders[orderId].status == OrderStatus.Active);
+        _;
+    }
+    
+    modifier userCanViewOrder(uint256 orderId) {
+        require(msg.sender == orders[orderId].customer || 
+                msg.sender == orders[orderId].seller ||
+                msg.sender == owner);
         _;
     }
    
@@ -214,30 +165,52 @@ contract CarPartStore is Owned, SafeMath {
    
     // register seller
     function registerSeller(
-        address addr,
         string name,
         string shippingAddress
     ) 
     public 
     {
-        sellers[addr].addr = addr;
-        sellers[addr].name = name;
-        sellers[addr].shippingAddress = shippingAddress;
-        sellers[addr].registrationDate = now;
+        sellers[msg.sender].addr = msg.sender;
+        sellers[msg.sender].name = name;
+        sellers[msg.sender].shippingAddress = shippingAddress;
+        sellers[msg.sender].registrationDate = now;
+    }
+    
+    function getSeller(address addr) public view 
+        returns(string name, uint256 registrationDate, string shippingAddress) 
+    {
+        Seller memory seller = sellers[addr];
+        
+        return (
+            seller.name,
+            seller.registrationDate,
+            seller.shippingAddress
+        );
     }
  
     // register customer
     function registerCustomer(
-        address addr,
         string name,
         string shippingAddress
     ) 
     public
     {
-        customers[addr].addr = addr;
-        customers[addr].name = name;
-        customers[addr].shippingAddress = shippingAddress;
-        sellers[addr].registrationDate = now;
+        customers[msg.sender].addr = msg.sender;
+        customers[msg.sender].name = name;
+        customers[msg.sender].shippingAddress = shippingAddress;
+        customers[msg.sender].registrationDate = now;
+    }
+    
+    function getCustomer(address addr) public view 
+        returns(string name, uint256 registrationDate, string shippingAddress) 
+    {
+        Customer memory customer = customers[addr];
+        
+        return (
+            customer.name,
+            customer.registrationDate,
+            customer.shippingAddress
+        );
     }
    
     // add Car // PROBABLY NOT EDIT CAR, JUST DELETE?
@@ -246,8 +219,9 @@ contract CarPartStore is Owned, SafeMath {
         bytes32 vin,
         bytes32 make,
         bytes32 model,
+        string description,
         uint256 dateOfRegistration,
-        bytes picturesIpfsDir
+        bytes metaIpfsHash
     )
         public 
         isSeller
@@ -257,11 +231,12 @@ contract CarPartStore is Owned, SafeMath {
         cars[carsCount].vin = vin;
         cars[carsCount].make = make;
         cars[carsCount].model = model;
+        cars[carsCount].description = description;
         cars[carsCount].dateOfRegistration = dateOfRegistration;
-        cars[carsCount].picturesIpfsDir = picturesIpfsDir;
+        cars[carsCount].metaIpfsHash = metaIpfsHash;
+        cars[carsCount].seller = msg.sender;
         
         carsByVin[vin] = carsCount;
-        sellers[msg.sender].cars.push(carsCount);
         
         return carsCount++;
     }
@@ -269,26 +244,54 @@ contract CarPartStore is Owned, SafeMath {
     // del car
    
     // get car
+    function getCar(uint256 carId) 
+        public 
+        view 
+        returns(
+            bytes32 vin,
+            bytes32 make,
+            bytes32 model,
+            string description,
+            uint256 dateOfRegistration,
+            bytes metaIpfsHash,
+            address seller
+        ) 
+    {
+        //require this vin isn't in the register .tolower
+        //report a car/part, ex. in 3 reports, get banned
+        
+        Car memory car = cars[carId]; 
+        return (
+            car.vin,
+            car.make,
+            car.model,
+            car.description,
+            car.dateOfRegistration,
+            car.metaIpfsHash,
+            car.seller
+        );
+    }
    
-    // func add part
     function addPart(
         bytes32 partType,
         uint256 carId,
         string description,
         uint256 price,
         uint8 daysForDelivery,
-        bytes picturesIpfsDir
+        bytes metaIpfsHash
     ) 
         public
         isSeller
         carBelongsToSeller(carId)
         returns(uint256) 
     {
+        //check car should not have this spart already .tolower()
+        
         parts[partsCount].partType = partType;
-        parts[partsCount].carId = carId;
+        parts[partsCount].car = carId;
         parts[partsCount].description = description;
         parts[partsCount].price = price;
-        parts[partsCount].picturesIpfsDir = picturesIpfsDir;
+        parts[partsCount].metaIpfsHash = metaIpfsHash;
         parts[partsCount].daysForDelivery = daysForDelivery;
         parts[partsCount].sold = false;
         
@@ -310,19 +313,21 @@ contract CarPartStore is Owned, SafeMath {
             string description,
             uint256 price,
             uint8 daysForDelivery,
-            bytes picturesIpfsDir
+            bytes metaIpfsHash
         ) 
     {
         Part memory part = parts[partId]; 
         return (
             part.partType,
-            part.carId,
+            part.car,
             part.description,
             part.price,
             part.daysForDelivery,
-            part.picturesIpfsDir
+            part.metaIpfsHash
         );
     }
+    
+    //TODO: get sold part, only customer & seller can see
     
     function buyPart(uint256 partId) 
         public 
@@ -331,37 +336,90 @@ contract CarPartStore is Owned, SafeMath {
         customerCanBuyPart(partId) 
         returns(uint256) 
     {
-        orders[ordersCount] = Order(ordersCount, partId, now, msg.sender, OrderStatus.Ordered);
+        address seller = cars[parts[partId].car].seller;
+        orders[ordersCount] = Order(ordersCount, partId, now, msg.sender, seller, OrderStatus.Active);
         parts[partId].sold = true;
-        //customers[msg.sender].purchasedParts.push(partId);
         
         return ordersCount++;
     }
     
-    function payToSeller(uint256 orderId) 
+     function getOrder(uint256 orderId) 
         public 
-        //is Customer?  
-        //orderIsCompleted(orderId)
+        view 
+        userCanViewOrder(orderId)
+        returns(
+            uint256 partId,
+            uint256 date,
+            address customer,
+            address seller,
+            OrderStatus status
+        ) 
+    {
+        Order memory order = orders[orderId]; 
+        return (
+            order.partId,
+            order.deliveryDate,
+            order.customer,
+            order.seller,
+            order.status
+        );
+    }
+    
+    // Seller request for payment after part delivery days have passed,
+    // plus default days for customer to respond have passed as well.
+    function sellerRequestPayment(uint256 orderId) 
+        public
+        hasSoldPart(orderId)
+        orderDeliveryDateWithResponseExpired(orderId)
+        orderIsActive(orderId)
     {
         uint orderAmount = parts[orders[orderId].partId].price;
         orderAmount = _getAmountAfterCommision(orderAmount);
     
         msg.sender.transfer(orderAmount);
+        orders[orderId].status = OrderStatus.Complete;
     }
     
-    function withdrawRefund(uint256 orderId) public isCustomer {
-        uint refund = 0;
-        //refund = orders[orderId];
-        //todo: require sender is customer and n days have passed 
+    function payToSeller(uint256 orderId) 
+        public
+        hasOrderedPart(orderId)
+        orderIsActive(orderId)
+    {
+        uint orderAmount = parts[orders[orderId].partId].price;
+        orderAmount = _getAmountAfterCommision(orderAmount);
     
-        msg.sender.transfer(refund);
+        msg.sender.transfer(orderAmount);
+        orders[orderId].status = OrderStatus.Complete;
     }
    
-    // TODO: return part
+    // customer is not happy with the part and wants to return the part and get his money back
+    function returnPart(uint256 orderId)
+        public 
+        hasOrderedPart(orderId) 
+        orderIsActive(orderId)
+        orderDeliveryDateExpired(orderId)
+    {
+       _withdrawRefund(orderId);
+       orders[orderId].status = OrderStatus.Return;
+    }
    
-    // get balance seller modifier()
-   
-    // get balance customer modifier()
+    // hasnt received a part, so customer wants his money back
+    function rejectPart(uint256 orderId) 
+        public 
+        hasOrderedPart(orderId)
+        orderIsActive(orderId) 
+        orderDeliveryDateExpired(orderId)
+    {
+       _withdrawRefund(orderId);
+       orders[orderId].status = OrderStatus.Reject;
+    }
+    
+    function _withdrawRefund(uint256 orderId) private {
+        uint refund = parts[orders[orderId].partId].price;
+        refund = _getAmountAfterCommision(refund);
+    
+        orders[orderId].customer.transfer(refund);
+    }
    
     //todo ban seller and confiscate his balance if parts/car is stolen
    
