@@ -4,10 +4,8 @@ import IpfsUtils from './util/ipfs-utils';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: [
-    './app.component.css'
-  ]
+  templateUrl: './seller-register.component.html',
+  styleUrls: ['./seller-register.component.css']
 })
 export class AppComponent {
   title = 'app';
