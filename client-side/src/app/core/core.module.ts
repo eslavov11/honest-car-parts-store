@@ -1,16 +1,17 @@
-import {NgModule, Optional, SkipSelf} from '@angular/core';
+import {NgModule} from '@angular/core';
 
 import {NavComponent} from './nav/nav.component';
+import {FooterComponent} from "./footer/footer.component";
 
 @NgModule({
   imports: [],
   exports: [
     NavComponent,
-    // FooterComponent
+    FooterComponent
   ],
   declarations: [
     NavComponent,
-    // FooterComponent,
+    FooterComponent,
   ],
   providers: [
   ]
