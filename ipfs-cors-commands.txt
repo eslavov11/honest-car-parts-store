@@ -1,3 +1,0 @@
-# After starting ipfs deamon run:
-ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://localhost:4200\"]"
-ipfs config --json API.HTTPHeaders.Access-Control-Allow-Credentials "[\"true\"]"
