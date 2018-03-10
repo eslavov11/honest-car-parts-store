@@ -13,3 +13,22 @@ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Credentials "[\"true\"]"
 "WBD208ASLKF", "Mercedes", "CLK", "got it since brand new", 952588873, "H1l;2jkrh"
 
 "mirrors", 1, "like new condition", "500000000000000000", 30, "!@FJDKL"
+
+
+ let car = {
+		vin: "WBD208ASLKF", 
+		make: "Mercedes",
+		model: "CLK",
+		description:"got it since brand new",
+		dateOfRegistration: 952588873,
+		metaIpfsHash: "H1l;2jkrh"
+	};
+
+    let part = {
+        vin: "WBD208ASLKF",
+        make: "Mercedes",
+        model: "CLK",
+        description:"got it since brand new",
+        dateOfRegistration: 952588873,
+        metaIpfsHash: "H1l;2jkrh"
+    };
