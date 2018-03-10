@@ -1,5 +1,5 @@
 const CarPartsStore = artifacts.require("./CarPartsStore.sol");
-require('truffle-test-utils').init();
+// require('truffle-test-utils').init();
 
 contract('CarPartsStore',function(accounts){
     let storeInstance;
@@ -17,6 +17,15 @@ contract('CarPartsStore',function(accounts){
 		dateOfRegistration: 952588873,
 		metaIpfsHash: "H1l;2jkrh"
 	};
+
+    let part = {
+        vin: "WBD208ASLKF",
+        make: "Mercedes",
+        model: "CLK",
+        description:"got it since brand new",
+        dateOfRegistration: 952588873,
+        metaIpfsHash: "H1l;2jkrh"
+    };
 	
     describe("creating car parts store",() => {
         beforeEach(async function() {

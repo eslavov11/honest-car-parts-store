@@ -7,7 +7,9 @@ export default class IpfsUtils {
     return 'https://ipfs.io/ipfs/';
   }
 
-  private static ipfs: any = ipfsApi('/ip4/127.0.0.1/tcp/5001');
+  // private static ipfs: any = ipfsApi('/ip4/127.0.0.1/tcp/5001');
+  private static ipfs: any = ipfsApi('ipfs.infura.io', '5001', {protocol: 'https'});
+
 
   public static addJsonAsFile(json) {
     const file = new File([JSON.stringify(json)], 'file.json');
