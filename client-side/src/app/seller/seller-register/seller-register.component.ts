@@ -7,18 +7,13 @@ import {ContractService} from '../../shared/services/contract.service';
   styleUrls: ['./seller-register.component.css']
 })
 export class SellerRegisterComponent implements OnInit {
-  private balance:number;
-
   constructor(private contractService: ContractService) {
   }
 
-  async ngOnInit() {
-    await this.contractService.loadAccounts();
-    await this.contractService.getBalance();
+  ngOnInit() {
+  }
 
-    this.balance = this.contractService.accountBalance;
-
+  registerSeller() {
     // await this.contractService.registerSeller("Bai seller", "Lulin");
-    console.log(await this.contractService.getSeller(this.contractService.account));
   }
 }

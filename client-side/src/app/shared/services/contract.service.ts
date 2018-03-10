@@ -4,6 +4,7 @@ import {default as contract} from 'truffle-contract';
 
 import {ContractConfig} from '../config/contract-config';
 import {Seller} from "../models/seller";
+import {Customer} from "../models/customer";
 
 @Injectable()
 export class ContractService {
@@ -16,6 +17,12 @@ export class ContractService {
 
   constructor() {
     this.initWeb3();
+    this.initData();
+  }
+
+  async initData() {
+    await this.loadAccounts();
+    await this.getBalance();
   }
 
   public async loadAccounts() {
@@ -140,5 +147,36 @@ export class ContractService {
     seller.shippingAddress = sellerObj[2];
 
     return seller;
+  }
+
+  public async registerCustomer(name: string, shippingAddress: string) {
+    this.contract.registerCustomer(name, shippingAddress, function (error, result) {
+      //TODO: notify
+      if (!error)
+        console.log(result);
+      else
+        console.error(error);
+    });
+
+    await this.getBalance();
+  }
+
+  public async getCustomer(account: any) {
+    const customerObj = await new Promise((resolve, reject) => {
+      this.contract.getCustomer(account, function (error, result) {
+        if (!error)
+          resolve(result);
+        else
+          console.error(error);
+      });
+    });
+
+    const customer = new Customer();
+    customer.address = account;
+    customer.name = customerObj[0];
+    customer.registrationDate = new Date(customerObj[1].c[0] * 1000);
+    customer.shippingAddress = customerObj[2];
+
+    return customer;
   }
 }

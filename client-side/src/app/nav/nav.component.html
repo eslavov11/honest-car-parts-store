@@ -5,13 +5,13 @@
           aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <a class="navbar-brand" href="#">Car Parts Store</a>
+  <a class="navbar-brand" href="">Car Parts Store</a>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" routerLink="parts/list">Parts</a>
-      </li>
+      <!--<li class="nav-item">-->
+        <!--<a class="nav-link" routerLink="parts/list">Parts</a>-->
+      <!--</li>-->
     </ul>
 
     <ul class="nav navbar-nav navbar-right">
@@ -19,13 +19,12 @@
       <!--TODO: show only if registered-->
       <!--TODO: else show register dropdown-->
       <li class="nav-item dropdown app-dropdown-hover">
-        <a class="nav-link dropdown-toggle" routerLink="seller/register"
+        <a class="nav-link dropdown-toggle" routerLink="seller/detail"
            id="navbarDropdownMenuLinkProfile" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
-          Edward
+          Edward (2.98 ETH)
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLinkProfile"
-             style="left: -110px !important;">
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLinkProfile">
           <a class="dropdown-item" routerLink="cars/list">My Cars</a>
           <!--TODO: sellers parts query?-->
           <a class="dropdown-item" routerLink="parts/list">My Parts</a>

@@ -1,0 +1,4 @@
+<input type="file" #fileupload [(ngModel)]="picture"
+       name="myFile" (change)="fileChange(fileupload.files)"/>
+<button (click)="uploadPicture()">>Upload picture</button>
+

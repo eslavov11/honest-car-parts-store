@@ -1,0 +1,31 @@
+<h1 class="h1 text-center">Customer</h1>
+<div class="card">
+  <div class="card-block text-center">
+    <br/>
+    <span class="text-muted">
+      Name <strong>{{this.customer.name}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Address <strong>{{this.customer.address}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Balance <strong>{{this.contractService.accountBalance}} ETH</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Date of Registration <strong>{{this.customer.registrationDate | date: 'dd/MM/yyyy'}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Shipping Address <strong>{{this.customer.shippingAddress}}</strong>
+    </span>
+    <br/>
+    <br/>
+  </div>
+</div>
