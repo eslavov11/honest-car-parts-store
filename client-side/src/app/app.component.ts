@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 
 import IpfsUtils from './util/ipfs-utils';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -10,6 +11,9 @@ import IpfsUtils from './util/ipfs-utils';
 export class AppComponent {
   title = 'app';
   picture: File = null;
+
+  constructor(private router: Router) {
+  }
 
   fileChange(files: FileList): void {
     this.picture = files.item(0);

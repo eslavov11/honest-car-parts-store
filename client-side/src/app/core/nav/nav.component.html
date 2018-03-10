@@ -5,7 +5,7 @@
           aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <a class="navbar-brand" href="#">Navbar</a>
+  <a class="navbar-brand" href="#">Car Parts Store</a>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
@@ -21,11 +21,35 @@
       <li class="nav-item">
         <a class="nav-link" href="/car/register">Register a car</a>
       </li>
+
+
     </ul>
 
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="text" placeholder="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <!--TODO: dynamically set /customer/detail || /seller-->
+      <!--TODO: show only if registered-->
+      <!--TODO: else show register dropdown-->
+      <li class="nav-item">
+        <a class="nav-link" routerLink="seller/register">Edward</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href=""
+           id="navbarDropdownMenuLink" data-toggle="dropdown"
+           aria-haspopup="true" aria-expanded="false">
+          <!--TODO: icons-->
+          Register
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"
+             style="left: -110px !important;">
+          <a class="dropdown-item" routerLink="customer/register">Register as customer</a>
+          <a class="dropdown-item" routerLink="seller/register">Register as seller</a>
+        </div>
+      </li>
+    </ul>
+
+    <!--<form class="form-inline my-2 my-lg-0">-->
+    <!--<input class="form-control mr-sm-2" type="text" placeholder="Search">-->
+    <!--<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>-->
+    <!--</form>-->
   </div>
 </nav>

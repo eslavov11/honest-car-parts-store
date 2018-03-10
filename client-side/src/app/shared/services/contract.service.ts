@@ -3,17 +3,19 @@ import {default as Web3} from 'web3';
 import {default as contract} from 'truffle-contract';
 
 import {ContractConfig} from '../config/contract-config';
+import {Seller} from "../models/seller";
 
 @Injectable()
 export class ContractService {
   public accounts: any[] = [];
   public account: any;
-  public account_balance: number;
+  public accountBalance: number;
   private web3: any;
   private contract;
   private LOCAL_PROVIDER_URL = 'http://localhost:8545';
 
   constructor() {
+    this.initWeb3();
   }
 
   public async loadAccounts() {
@@ -63,19 +65,34 @@ export class ContractService {
 
   public async getBalance(): Promise<number> {
     if (this.account != null) {
-      this.account_balance = await new Promise((resolve, reject) => {
+      this.accountBalance = await new Promise((resolve, reject) => {
         this.web3.eth.defaultAccount = this.account;
         this.web3.eth.getBalance(this.account, (err, balance) => {
           if (err != null) {
             alert('There was an error getting your balance.');
             return;
           }
-          resolve(this.web3.fromWei(balance, "ether"));
+          resolve(this.web3.fromWei(balance, 'ether').c);
         });
       }) as number;
     }
 
-    return Promise.resolve(this.account_balance);
+    return Promise.resolve(this.accountBalance);
+  }
+
+  public async getBalanceForAccount(account: any): Promise<number> {
+    const balanceFromAccount = await new Promise((resolve, reject) => {
+      this.web3.eth.defaultAccount = account;
+      this.web3.eth.getBalance(account, (err, balance) => {
+        if (err != null) {
+          alert('There was an error getting your balance.');
+          return;
+        }
+        resolve(this.web3.fromWei(balance, 'ether'));
+      });
+    }) as number;
+
+    return Promise.resolve(balanceFromAccount);
   }
 
   public initWeb3() {
@@ -92,5 +109,36 @@ export class ContractService {
     this.contract = myContract.at(ContractConfig.contract.address);
     // let c = new this.web3.eth.Contract(ContractConfig.contract.abi, '0xFa028Ad8D553803078af63130b059A3de1CE37Bd');
     console.log(contract);
+  }
+
+  public async registerSeller(name: string, shippingAddress: string) {
+    this.contract.registerSeller(name, shippingAddress, function (error, result) {
+      //TODO: notify
+      if (!error)
+        console.log(result)
+      else
+        console.error(error);
+    });
+
+    await this.getBalance();
+  }
+
+  public async getSeller(account: any) {
+    const sellerObj = await new Promise((resolve, reject) => {
+      this.contract.getSeller(account, function (error, result) {
+        if (!error)
+          resolve(result);
+        else
+          console.error(error);
+      });
+    });
+
+    const seller = new Seller();
+    seller.address = account;
+    seller.name = sellerObj[0];
+    seller.registrationDate = new Date(sellerObj[1].c[0] * 1000);
+    seller.shippingAddress = sellerObj[2];
+
+    return seller;
   }
 }
