@@ -5,6 +5,7 @@ import {default as contract} from 'truffle-contract';
 import {ContractConfig} from '../config/contract-config';
 import {Seller} from "../models/seller";
 import {Customer} from "../models/customer";
+import {Car} from "../models/car";
 
 @Injectable()
 export class ContractService {
@@ -120,8 +121,6 @@ export class ContractService {
       else
         console.error(error);
     });
-
-    await this.getBalance();
   }
 
   public async getSeller(account: any) {
@@ -172,5 +171,34 @@ export class ContractService {
     customer.shippingAddress = customerObj[2];
 
     return customer;
+  }
+
+  public async registerCar(vin: string, metaIpfsHash: string) {
+    return await new Promise((resolve, reject) => {
+      this.contract.registerCar(vin, metaIpfsHash, function (error, result) {
+        if (!error)
+          resolve(result);
+        else
+          console.error(error);
+      });
+    });
+  }
+
+  public async getCar(id: number) {
+    const carObj = await new Promise((resolve, reject) => {
+      this.contract.getCar(id, function (error, result) {
+        if (!error)
+          resolve(result);
+        else
+          console.error(error);
+      });
+    });
+
+    const car = new Car();
+    car.vin = this.web3.toAscii(carObj[0]);
+    car.metaIpfsHash = this.web3.toAscii(carObj[1]);
+    car.seller = carObj[2];
+
+    return car;
   }
 }

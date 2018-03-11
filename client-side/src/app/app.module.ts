@@ -20,6 +20,7 @@ import {PartListComponent} from "./part/part-list/part-list.component";
 import {OrderDetailComponent} from "./order/order-detail/order-detail.component";
 import {OrderEditComponent} from "./order/order-edit/order-edit.component";
 import {OrderListComponent} from "./order/order-list/order-list.component";
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import {OrderListComponent} from "./order/order-list/order-list.component";
   imports: [
     BrowserModule,
     FormsModule,
+    HttpClientModule,
     AppRoutingModule
   ],
   providers: [ContractService],

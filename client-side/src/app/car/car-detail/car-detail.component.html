@@ -1,0 +1,41 @@
+<h1 class="h1 text-center">Car</h1>
+<div class="card">
+  <div class="card-block text-center">
+    <br/>
+    <img [src]="this.carImages[0]" alt="" style="width:75%;"/>
+    <br/>
+    <span class="text-muted">
+      VIN <strong>{{this.car.vin}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Make <strong>{{this.car.make}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Model <strong>{{this.car.model}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Description <strong>{{this.car.description}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Date of Registration <strong>{{this.car.dateOfRegistration | date: 'dd/MM/yyyy'}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Seller
+      <a [routerLink]="['/seller/detail', this.car.seller]">
+                <strong>{{this.car.seller}}</strong>
+      </a>
+    </span>
+    <br/>
+    <br/>
+  </div>
+</div>
