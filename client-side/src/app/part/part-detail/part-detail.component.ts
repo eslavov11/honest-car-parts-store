@@ -3,7 +3,7 @@ import {Car} from "../../shared/models/car";
 import {Part} from "../../shared/models/part";
 import {PartIpfs} from '../../shared/ipfs-models/part-ipfs';
 import {ContractService} from "../../shared/services/contract.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import IpfsUtils from "../../util/ipfs-utils";
 
@@ -21,6 +21,7 @@ export class PartDetailComponent implements OnInit, OnDestroy {
 
   constructor(private contractService: ContractService,
               private route: ActivatedRoute,
+              private router: Router,
               private http: HttpClient) {
     this.part = new Part();
     this.partImages = [];
@@ -36,8 +37,9 @@ export class PartDetailComponent implements OnInit, OnDestroy {
     await this.contractService.loadAccounts();
     await this.contractService.getBalance();
 
-    this.part.id = +params['id'];
-    this.part = await this.contractService.getPart(this.part.id);
+    const partId = +params['id'];
+    this.part = await this.contractService.getPart(partId);
+    this.part.id = partId;
     this.http.get(IpfsUtils.IPFS_SERVER + this.part.metaIpfsHash).subscribe(x => {
       this.partIpfs = x as PartIpfs;
       this.part.description = this.partIpfs.description;
@@ -45,6 +47,11 @@ export class PartDetailComponent implements OnInit, OnDestroy {
         this.partImages.push(IpfsUtils.IPFS_SERVER + i);
       });
     });
+  }
+
+  async buyPart() {
+    await this.contractService.buyPart(this.part.id, this.part.price);
+    this.router.navigate(['']);
   }
 
   ngOnDestroy() {

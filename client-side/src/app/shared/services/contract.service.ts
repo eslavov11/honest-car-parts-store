@@ -229,18 +229,18 @@ export class ContractService {
   }
 
   public async addPart(partType: string,
-                            carId: number,
-                            price: string,
-                            daysForDelivery: number,
-                            metaIpfsHash: string) {
+                       carId: number,
+                       price: string,
+                       daysForDelivery: number,
+                       metaIpfsHash: string) {
     return await new Promise((resolve, reject) => {
       this.contract.addPart(partType, carId, this.web3.toWei(price, 'ether'),
         daysForDelivery, metaIpfsHash, function (error, result) {
-        if (!error)
-          resolve(result);
-        else
-          console.error(error);
-      });
+          if (!error)
+            resolve(result);
+          else
+            console.error(error);
+        });
     });
   }
 
@@ -256,11 +256,23 @@ export class ContractService {
 
     const part = new Part();
     part.partType = this.web3.toUtf8(partObj[0]);
-    part.car = partObj[1];
-    part.price = this.web3.fromWei(partObj[2], 'ether');
-    part.daysForDelivery = partObj[3];
+    part.car = partObj[1].toString(10);
+    part.price = this.web3.fromWei(partObj[2], 'ether').toString(10);
+    part.daysForDelivery = partObj[3].toString(10);
     part.metaIpfsHash = this.web3.toAscii(partObj[4]);
 
     return part;
+  }
+
+  public async buyPart(partId: number, price: number) {
+    return await new Promise((resolve, reject) => {
+      this.contract.buyPart(partId, {value: this.web3.toWei(price, 'ether')},
+        function (error, result) {
+          if (!error)
+            resolve(result);
+          else
+            console.error(error);
+        });
+    });
   }
 }

@@ -2,7 +2,7 @@
 <div class="card">
   <div class="card-block text-center">
     <br/>
-    <img [src]="this.partImages[0]" alt="" style="width:70%;"/>
+    <img [src]="this.partImages[0]" alt="" style="width:60%;"/>
     <br/>
     <br/>
     <span class="text-muted">
@@ -11,7 +11,10 @@
     <br/>
     <br/>
     <span class="text-muted">
-      Car <strong>{{this.part.car}}</strong>
+      From Car
+      <a [routerLink]="['/car/detail', this.part.car]">
+        <strong>{{this.part.car}}</strong>
+      </a>
     </span>
     <br/>
     <br/>
@@ -28,6 +31,9 @@
     <span class="text-muted">
       Description <strong>{{this.part.description}}</strong>
     </span>
+    <br/>
+    <br/>
+    <button (click)="buyPart()" class="btn btn-primary">Buy Part</button>
     <br/>
     <br/>
   </div>
