@@ -25,25 +25,26 @@ export class PartAddComponent implements OnInit {
     await this.contractService.getBalance();
 
     //TODO: seller cars
-    this.cars = await this.contractService.getCars([2,3]);
+    this.cars = await this.contractService.getCars([2, 3]);
   }
 
   async onSubmit(f: NgForm) {
-    // const pictureIpfs = await IpfsUtils.addFile(this.picture) as string;
+    const pictureIpfs = await IpfsUtils.addFile(this.picture) as string;
 
     const model = f.value;
 
-    // this.carIpfs = new CarIpfs();
-    // this.carIpfs.make = model.make;
-    // this.carIpfs.model = model.model;
-    // this.carIpfs.description = model.description;
-    // this.carIpfs.dateOfRegistration = model.dateOfRegistration;
-    // this.carIpfs.images = [];
-    // this.carIpfs.images.push(pictureIpfs);
-    //
-    // const metaIpfsHash = await IpfsUtils.addJsonAsFile(this.carIpfs) as string;
-    // await this.contractService.registerCar(model.vin, metaIpfsHash);
-    // this.router.navigate(['']);//TODO: car/id
+    this.partIpfs = new PartIpfs();
+    this.partIpfs.description = model.description;
+    this.partIpfs.images = [];
+    this.partIpfs.images.push(pictureIpfs);
+
+    const metaIpfsHash = await IpfsUtils.addJsonAsFile(this.partIpfs) as string;
+    await this.contractService.addPart(model.partType,
+      model.car,
+      model.price,
+      model.daysForDelivery,
+      metaIpfsHash);
+    this.router.navigate(['']);
   }
 
   fileChange(files: FileList): void {

@@ -228,7 +228,7 @@ export class ContractService {
     return car;
   }
 
-  public async registerPart(partType: string,
+  public async addPart(partType: string,
                             carId: number,
                             price: string,
                             daysForDelivery: number,
@@ -257,7 +257,7 @@ export class ContractService {
     const part = new Part();
     part.partType = this.web3.toUtf8(partObj[0]);
     part.car = partObj[1];
-    part.price = partObj[2];
+    part.price = this.web3.fromWei(partObj[2], 'ether');
     part.daysForDelivery = partObj[3];
     part.metaIpfsHash = this.web3.toAscii(partObj[4]);
 
