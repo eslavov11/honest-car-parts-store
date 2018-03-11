@@ -55,25 +55,92 @@ contract('CarPartsStore',function(accounts){
         });
 
         //testing car registration and get
-        it("should register customer", async function() {
-            await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
-            let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
+        it("should create car", async function() {
+            await storeInstance.registerSeller(seller.name, seller.shippingAddress, {from: sellerAddr});
+            await storeInstance.registerCar(car.vin, car.metaIpfsHash, {from: sellerAddr});
 
-            assert.strictEqual(customer.name, customerCreated[0].valueOf(), "customer name not set");
-            assert.strictEqual(customer.shippingAddress, customerCreated[2].valueOf(), "customer shipping address not set");
+            let carCreated = await storeInstance.getCar.call(1, {from: sellerAddr});
+            console.log(carCreated);
+            assert.equal(car.vin, web3.toUtf8(carCreated[0]).toString(), "car vin not set");
         });
 
         //testing add part and get
-        it("should register customer", async function() {
-            await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
-            let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
+        it("should create part", async function() {
+            await storeInstance.registerSeller(seller.name, seller.shippingAddress, {from: sellerAddr});
+            await storeInstance.registerCar(car.vin, car.metaIpfsHash, {from: sellerAddr});
+            await storeInstance.addPart(part.partType,
+            part.car, part.price, part.daysForDelivery, part.metaIpfsHash, {from: sellerAddr});
 
-            assert.strictEqual(customer.name, customerCreated[0].valueOf(), "customer name not set");
-            assert.strictEqual(customer.shippingAddress, customerCreated[2].valueOf(), "customer shipping address not set");
+            let partCreated = await storeInstance.getPartForSale.call(1, {from: sellerAddr});
+
+            assert.equal(part.partType, web3.toUtf8(partCreated[0]), "part type not set");
         });
 
         //testing buy part and get order
-        it("should register customer", async function() {
+        it("should buy part and get order customer", async function() {
+            await storeInstance
+            .registerSeller(seller.name, seller.shippingAddress, {from: sellerAddr});
+            await storeInstance
+            .registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
+
+            await storeInstance.registerCar(car.vin, car.metaIpfsHash, {from: sellerAddr});
+            await storeInstance.addPart(part.partType,
+                part.car, part.price, part.daysForDelivery, part.metaIpfsHash, {from: sellerAddr});
+
+            await storeInstance.buyPart(1, {from: customerAddr, value: part.price});
+
+
+            let orderCreated = await storeInstance.getOrder.call(1, {from: customerAddr});
+
+            assert.equal(customerAddr, orderCreated[2], "customer address not set in order");
+            assert.equal(sellerAddr, orderCreated[3], "seller address not set in order");
+        });
+
+        // //testing return part
+        // it("should return part", async function() {
+        //     await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
+        //     let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
+        //
+        //     assert.strictEqual(customer.name, customerCreated[0].valueOf(), "customer name not set");
+        //     assert.strictEqual(customer.shippingAddress, customerCreated[2].valueOf(), "customer shipping address not set");
+        // });
+        //
+        // //testing return part
+        // it("should not return part due to days for delivery not passed", async function() {
+        //     await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
+        //     let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
+        //
+        //     assert.strictEqual(customer.name, customerCreated[0].valueOf(), "customer name not set");
+        //     assert.strictEqual(customer.shippingAddress, customerCreated[2].valueOf(), "customer shipping address not set");
+        // });
+
+        //testing paytoseller (seller is happy with the product)
+        it("testing paytoseller, should pay", async function() {
+            const sellerBalance = (await getBalanceForAccount(sellerAddr)).toNumber();
+
+            await storeInstance
+                .registerSeller(seller.name, seller.shippingAddress, {from: sellerAddr});
+            await storeInstance
+                .registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
+
+            await storeInstance.registerCar(car.vin, car.metaIpfsHash, {from: sellerAddr});
+            await storeInstance.addPart(part.partType,
+                part.car, part.price, part.daysForDelivery, part.metaIpfsHash, {from: sellerAddr});
+
+            await storeInstance.buyPart(1, {from: customerAddr, value: part.price});
+
+            await storeInstance.payToSeller.call(1, {from: customerAddr});
+
+            const sellerNewBalance = (await getBalanceForAccount(sellerAddr)).toNumber();
+
+            console.log('balance---');
+            console.log(sellerBalance);
+            console.log(sellerNewBalance);
+            assert(sellerBalance < sellerNewBalance, "seller balance not changed");
+        });
+
+        //testing reject part
+        it("testing reject part, should reject part", async function() {
             await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
             let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
 
@@ -81,8 +148,8 @@ contract('CarPartsStore',function(accounts){
             assert.strictEqual(customer.shippingAddress, customerCreated[2].valueOf(), "customer shipping address not set");
         });
 
-        //testing return part
-        it("should return part", async function() {
+        //testing reject part
+        it("testing reject part, should not reject part due to days for delivery not passed", async function() {
             await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
             let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
 
@@ -90,8 +157,7 @@ contract('CarPartsStore',function(accounts){
             assert.strictEqual(customer.shippingAddress, customerCreated[2].valueOf(), "customer shipping address not set");
         });
 
-        //testing return part
-        it("should not return part due to days for delivery not passed", async function() {
+        it("seller request payment, should pay", async function() {
             await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
             let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
 
@@ -99,31 +165,7 @@ contract('CarPartsStore',function(accounts){
             assert.strictEqual(customer.shippingAddress, customerCreated[2].valueOf(), "customer shipping address not set");
         });
 
-        it("should reject part", async function() {
-            await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
-            let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
-
-            assert.strictEqual(customer.name, customerCreated[0].valueOf(), "customer name not set");
-            assert.strictEqual(customer.shippingAddress, customerCreated[2].valueOf(), "customer shipping address not set");
-        });
-
-        it("should not reject part due to days for delivery not passed", async function() {
-            await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
-            let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
-
-            assert.strictEqual(customer.name, customerCreated[0].valueOf(), "customer name not set");
-            assert.strictEqual(customer.shippingAddress, customerCreated[2].valueOf(), "customer shipping address not set");
-        });
-
-        it("seller request payment should pay", async function() {
-            await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
-            let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
-
-            assert.strictEqual(customer.name, customerCreated[0].valueOf(), "customer name not set");
-            assert.strictEqual(customer.shippingAddress, customerCreated[2].valueOf(), "customer shipping address not set");
-        });
-
-        it("seller request payment should not pay due to days plus sellers response days not passed", async function() {
+        it("seller request payment, should not pay due to days plus sellers response days not passed", async function() {
             await storeInstance.registerCustomer(customer.name, customer.shippingAddress, {from: customerAddr});
             let customerCreated = await storeInstance.getCustomer.call(customerAddr, {from: customerAddr});
 
@@ -139,3 +181,17 @@ contract('CarPartsStore',function(accounts){
         // });
     });
 })
+
+async function getBalanceForAccount(account) {
+    const balanceFromAccount = await new Promise((resolve, reject) => {
+        this.web3.eth.getBalance(account, (err, balance) => {
+            if (err != null) {
+                alert('There was an error getting your balance.');
+                return;
+            }
+            resolve(this.web3.fromWei(balance, 'ether'));
+        });
+    });
+
+    return Promise.resolve(balanceFromAccount);
+}
