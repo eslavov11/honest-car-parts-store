@@ -130,16 +130,23 @@ export class ContractService {
       this.contract.getSeller(account, function (error, result) {
         if (!error)
           resolve(result);
-        else
-          console.error(error);
+        else {
+          resolve(false);
+          console.log(error);
+        }
       });
     });
+
+    if (!sellerObj) {
+      return null;
+    }
 
     const seller = new Seller();
     seller.address = account;
     seller.name = sellerObj[0];
     seller.registrationDate = new Date(sellerObj[1].c[0] * 1000);
     seller.shippingAddress = sellerObj[2];
+    seller.cars = sellerObj[3];
 
     return seller;
   }
@@ -151,8 +158,10 @@ export class ContractService {
         this.contract.getCar(cId, function (error, result) {
           if (!error)
             resolve(result);
-          else
-            console.error(error);
+          else {
+            resolve(false);
+            console.log(error);
+          }
         });
       });
 
@@ -186,10 +195,16 @@ export class ContractService {
       this.contract.getCustomer(account, function (error, result) {
         if (!error)
           resolve(result);
-        else
-          console.error(error);
+        else {
+          resolve(false);
+          console.log(error);
+        }
       });
     });
+
+    if (!customerObj) {
+      return null;
+    }
 
     const customer = new Customer();
     customer.address = account;
@@ -279,7 +294,7 @@ export class ContractService {
 
   public async getOrder(id: number) {
     const orderObj = await new Promise((resolve, reject) => {
-      this.contract.getPartForSale(id, function (error, result) {
+      this.contract.getOrder(id, function (error, result) {
         if (!error)
           resolve(result);
         else

@@ -1,7 +1,7 @@
 export const ContractConfig = {
   contract:
     {
-      address: '0xd9c2748bf7162d2dc1b8f0159b7bdcd7d4388160',
+      address: '0x22e1728b570b583cec5f2694ca5b67ab611409d1',
       abi: [
         {
           "constant": true,
@@ -162,6 +162,14 @@ export const ContractConfig = {
             {
               "name": "shippingAddress",
               "type": "string"
+            },
+            {
+              "name": "sellerCars",
+              "type": "uint256[]"
+            },
+            {
+              "name": "sellerOrders",
+              "type": "uint256[]"
             }
           ],
           "payable": false,

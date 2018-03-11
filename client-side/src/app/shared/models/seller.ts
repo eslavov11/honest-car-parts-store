@@ -3,4 +3,5 @@ export class Seller {
   name: string;
   shippingAddress: string;
   registrationDate: Date;
+  cars: number[];
 }

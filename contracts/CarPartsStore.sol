@@ -143,7 +143,7 @@ contract CarPartsStore is Owned, SafeMath {
 
     modifier orderDeliveryDateExpired(uint256 order) {
         require(now <= orders[order].deliveryDate +
-                        parts[orders[order].part].daysForDelivery * 1 seconds); //1 days
+                        parts[orders[order].part].daysForDelivery * 1 seconds); //TODO: 1 days
         _;
     }
 
@@ -194,14 +194,22 @@ contract CarPartsStore is Owned, SafeMath {
     }
 
     function getSeller(address addr) public sellerExists(addr) view
-        returns(string name, uint256 registrationDate, string shippingAddress)
+        returns(
+            string name, 
+            uint256 registrationDate, 
+            string shippingAddress, 
+            uint256[] sellerCars, 
+            uint256[] sellerOrders
+        )
     {
         Seller memory seller = sellers[addr];
 
         return (
             seller.name,
             seller.registrationDate,
-            seller.shippingAddress
+            seller.shippingAddress,
+            seller.cars,
+            seller.orders
         );
     }
 
@@ -335,7 +343,8 @@ contract CarPartsStore is Owned, SafeMath {
     {
         ordersCount++;
         address seller = cars[parts[part].car].seller;
-        orders[ordersCount] = Order(part, now, msg.sender, seller, OrderStatus.Active);
+        uint256 deliveryDate = now + parts[part].daysForDelivery * 1 seconds; // TODO: 1 days
+        orders[ordersCount] = Order(part, deliveryDate, msg.sender, seller, OrderStatus.Active);
         parts[part].sold = true;
         
         return ordersCount;
@@ -386,7 +395,7 @@ contract CarPartsStore is Owned, SafeMath {
         uint orderAmount = parts[orders[order].part].price;
         orderAmount = _getAmountAfterCommision(orderAmount);
     
-        msg.sender.transfer(orderAmount);
+        orders[order].seller.transfer(orderAmount);
         orders[order].status = OrderStatus.Complete;
     }
    

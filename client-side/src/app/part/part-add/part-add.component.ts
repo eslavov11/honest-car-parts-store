@@ -24,8 +24,9 @@ export class PartAddComponent implements OnInit {
     await this.contractService.loadAccounts();
     await this.contractService.getBalance();
 
-    //TODO: seller cars
-    this.cars = await this.contractService.getCars([2, 3]);
+    const seller = await this.contractService.getSeller(this.contractService.account);
+
+    this.cars = await this.contractService.getCars(seller.cars);
   }
 
   async onSubmit(f: NgForm) {

@@ -11,8 +11,14 @@ ipfs config --json API.HTTPHeaders.Access-Control-Allow-Credentials "[\"true\"]"
 "Customer c", "Lulin"
 
 "WBD208ASLKF", "Mercedes", "CLK", "got it since brand new", 952588873, "H1l;2jkrh"
+"2WBD208ASLKF", "Mercedes", "CLK", "got it since brand new", 952588873, "H1l;2jkrh"
+"3WBD208ASLKF", "Mercedes", "CLK", "got it since brand new", 952588873, "H1l;2jkrh"
 
-"mirrors", 1, "like new condition", "500000000000000000", 30, "!@FJDKL"
+"mirrors", 1, "500000000000000000", 60, "!@FJDKL"
+"mirrors2", 1, "500000000000000000", 60, "!@FJDKL"
+"mirrors3", 1, "500000000000000000", 60, "!@FJDKL"
+"mirrors4", 1, "500000000000000000", 60, "!@FJDKL"
+"mirrors5", 1, "500000000000000000", 60, "!@FJDKL"
 
 
  let car = {

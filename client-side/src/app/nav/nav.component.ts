@@ -19,7 +19,7 @@ export class NavComponent implements OnInit {
 
 
   constructor(private contractService: ContractService) {
-    this.seller = new Customer();
+    this.seller = new Seller();
     this.customer = new Customer();
 
     this.balance = 0;
@@ -33,8 +33,8 @@ export class NavComponent implements OnInit {
     this.seller = await this.contractService.getSeller(this.contractService.account);
     this.customer = await this.contractService.getCustomer(this.contractService.account);
 
-    this.isSeller = !!this.seller.name.length;
-    this.isCustomer = !!this.customer.name.length;
+    this.isSeller = !!this.seller;
+    this.isCustomer = !!this.customer;
     this.isRegistered = this.isSeller || this.isCustomer;
   }
 }
