@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {ContractService} from "../shared/services/contract.service";
 import {Seller} from "../shared/models/seller";
+import {Customer} from "../shared/models/customer";
 
 @Component({
   selector: 'app-nav',
@@ -9,9 +10,18 @@ import {Seller} from "../shared/models/seller";
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
-  private balance:number;
+  private balance: number;
+  private seller: Seller;
+  private customer: Customer;
+  private isSeller: boolean;
+  private isCustomer: boolean;
+  private isRegistered: boolean;
+
 
   constructor(private contractService: ContractService) {
+    this.seller = new Customer();
+    this.customer = new Customer();
+
     this.balance = 0;
   }
 
@@ -20,5 +30,11 @@ export class NavComponent implements OnInit {
     await this.contractService.getBalance();
 
     this.balance = this.contractService.accountBalance;
+    this.seller = await this.contractService.getSeller(this.contractService.account);
+    this.customer = await this.contractService.getCustomer(this.contractService.account);
+
+    this.isSeller = !!this.seller.name.length;
+    this.isCustomer = !!this.customer.name.length;
+    this.isRegistered = this.isSeller || this.isCustomer;
   }
 }

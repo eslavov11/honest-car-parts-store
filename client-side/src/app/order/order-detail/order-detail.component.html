@@ -1,0 +1,48 @@
+<h1 class="h1 text-center">Order</h1>
+<div class="card">
+  <div class="card-block text-center">
+    <br/>
+    <span class="text-muted">
+      Order # <strong>{{this.order.id}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Part
+      <a [routerLink]="['/part/detail', this.order.part]">
+        <strong>View</strong>
+      </a>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Delivery Date <strong>{{this.order.deliveryDate | date: 'dd/MM/yyyy'}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Customer
+      <a [routerLink]="['/customer/detail', this.order.customer]">
+        <strong>View</strong>
+      </a>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Seller
+      <a [routerLink]="['/seller/detail', this.order.seller]">
+        <strong>View</strong>
+      </a>
+    </span>
+    <br/>
+    <br/>
+    <span class="text-muted">
+      Status <strong>{{this.order.status}}</strong>
+    </span>
+    <br/>
+    <br/>
+    <!--<button (click)="buyPart()" class="btn btn-primary">Buy Part</button>-->
+    <br/>
+    <br/>
+  </div>
+</div>

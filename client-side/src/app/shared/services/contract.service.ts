@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {default as Web3} from 'web3';
+import * as Web3 from 'web3';
 import {default as contract} from 'truffle-contract';
 
 import {ContractConfig} from '../config/contract-config';
@@ -7,6 +7,7 @@ import {Seller} from "../models/seller";
 import {Customer} from "../models/customer";
 import {Car} from "../models/car";
 import {Part} from "../models/part";
+import {Order} from "../models/order";
 
 @Injectable()
 export class ContractService {
@@ -274,5 +275,25 @@ export class ContractService {
             console.error(error);
         });
     });
+  }
+
+  public async getOrder(id: number) {
+    const orderObj = await new Promise((resolve, reject) => {
+      this.contract.getPartForSale(id, function (error, result) {
+        if (!error)
+          resolve(result);
+        else
+          console.error(error);
+      });
+    });
+
+    const order = new Order();
+    order.part = orderObj[0].toString(10);
+    order.deliveryDate = orderObj[1].toString(10) * 1000;
+    order.customer = orderObj[3];
+    order.seller = orderObj[3];
+    order.status = orderObj[4];
+
+    return order;
   }
 }

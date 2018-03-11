@@ -15,37 +15,54 @@
     </ul>
 
     <ul class="nav navbar-nav navbar-right">
-      <!--TODO: dynamically set /customer/detail || /seller-->
-      <!--TODO: show only if registered-->
-      <!--TODO: else show register dropdown-->
-      <li class="nav-item dropdown app-dropdown-hover">
-        <a class="nav-link dropdown-toggle" routerLink="seller/detail"
-           id="navbarDropdownMenuLinkProfile" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
-          Edward ({{this.balance}} ETH)
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLinkProfile">
-          <a class="dropdown-item" routerLink="cars/list">My Cars</a>
-          <!--TODO: sellers parts query?-->
-          <a class="dropdown-item" routerLink="parts/list">My Parts</a>
-          <a class="dropdown-item" routerLink="orders/list">My Orders</a>
-        </div>
-      </li>
+      <div *ngIf="this.isRegistered;else other_content">
+        <div *ngIf="this.isSeller;else is_customer">
+          <li class="nav-item dropdown app-dropdown-hover">
+            <a class="nav-link dropdown-toggle" routerLink="seller/detail"
+               id="navbarDropdownMenuLinkProfile" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+              {{this.seller.name}} ({{this.balance}} ETH)
+            </a>
+
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLinkProfile">
+
+                <a class="dropdown-item" routerLink="cars/list">My Cars</a>
+                <!--TODO: sellers parts query?-->
+              <a class="dropdown-item" routerLink="parts/list">My Parts</a>
 
 
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href=""
-           id="navbarDropdownMenuLinkReg" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
-          <!--TODO: icons-->
-          Register
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLinkReg"
-             style="left: -110px !important;">
-          <a class="dropdown-item" routerLink="customer/register">Register as customer</a>
-          <a class="dropdown-item" routerLink="seller/register">Register as seller</a>
+              <a class="dropdown-item" routerLink="orders/list">My Orders</a>
+            </div>
+          </li>
         </div>
-      </li>
+        <ng-template #is_customer>
+          <li class="nav-item dropdown app-dropdown-hover">
+            <a class="nav-link dropdown-toggle" routerLink="customer/detail"
+               id="navbarDropdownMenuLinkProfile" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+              {{this.customer.name}} ({{this.balance}} ETH)
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLinkProfile">
+              <a class="dropdown-item" routerLink="orders/list">My Orders</a>
+            </div>
+          </li>
+        </ng-template>
+      </div>
+      <ng-template #other_content>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href=""
+             id="navbarDropdownMenuLinkReg" data-toggle="dropdown"
+             aria-haspopup="true" aria-expanded="false">
+            <!--TODO: icons-->
+            Register
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLinkReg"
+               style="left: -110px !important;">
+            <a class="dropdown-item" routerLink="customer/register">Register as customer</a>
+            <a class="dropdown-item" routerLink="seller/register">Register as seller</a>
+          </div>
+        </li>
+      </ng-template>
     </ul>
   </div>
 </nav>
