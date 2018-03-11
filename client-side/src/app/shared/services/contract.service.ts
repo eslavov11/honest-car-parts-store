@@ -17,12 +17,6 @@ export class ContractService {
 
   constructor() {
     this.initWeb3();
-    this.initData();
-  }
-
-  async initData() {
-    await this.loadAccounts();
-    await this.getBalance();
   }
 
   public async loadAccounts() {
@@ -79,7 +73,7 @@ export class ContractService {
             alert('There was an error getting your balance.');
             return;
           }
-          resolve(this.web3.fromWei(balance, 'ether').c);
+          resolve(this.web3.fromWei(balance, 'ether'));
         });
       }) as number;
     }
