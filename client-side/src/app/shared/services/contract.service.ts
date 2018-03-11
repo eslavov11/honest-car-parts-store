@@ -6,6 +6,7 @@ import {ContractConfig} from '../config/contract-config';
 import {Seller} from "../models/seller";
 import {Customer} from "../models/customer";
 import {Car} from "../models/car";
+import {Part} from "../models/part";
 
 @Injectable()
 export class ContractService {
@@ -142,6 +143,31 @@ export class ContractService {
     return seller;
   }
 
+  public async getCars(carsId: number[]) {
+    const cars = [];
+    carsId.forEach(async cId => {
+      const carObj = await new Promise((resolve, reject) => {
+        this.contract.getCar(cId, function (error, result) {
+          if (!error)
+            resolve(result);
+          else
+            console.error(error);
+        });
+      });
+
+      const car = new Car();
+      car.id = cId;
+      car.vin = this.web3.toUtf8(carObj[0]);
+      car.metaIpfsHash = this.web3.toAscii(carObj[1]);
+      car.seller = carObj[2];
+
+      cars.push(car);
+    });
+
+
+    return cars;
+  }
+
   public async registerCustomer(name: string, shippingAddress: string) {
     this.contract.registerCustomer(name, shippingAddress, function (error, result) {
       //TODO: notify
@@ -195,10 +221,46 @@ export class ContractService {
     });
 
     const car = new Car();
-    car.vin = this.web3.toAscii(carObj[0]);
+    car.vin = this.web3.toUtf8(carObj[0]);
     car.metaIpfsHash = this.web3.toAscii(carObj[1]);
     car.seller = carObj[2];
 
     return car;
+  }
+
+  public async registerPart(partType: string,
+                            carId: number,
+                            price: string,
+                            daysForDelivery: number,
+                            metaIpfsHash: string) {
+    return await new Promise((resolve, reject) => {
+      this.contract.addPart(partType, carId, this.web3.toWei(price, 'ether'),
+        daysForDelivery, metaIpfsHash, function (error, result) {
+        if (!error)
+          resolve(result);
+        else
+          console.error(error);
+      });
+    });
+  }
+
+  public async getPart(id: number) {
+    const partObj = await new Promise((resolve, reject) => {
+      this.contract.getPartForSale(id, function (error, result) {
+        if (!error)
+          resolve(result);
+        else
+          console.error(error);
+      });
+    });
+
+    const part = new Part();
+    part.partType = this.web3.toUtf8(partObj[0]);
+    part.car = partObj[1];
+    part.price = partObj[2];
+    part.daysForDelivery = partObj[3];
+    part.metaIpfsHash = this.web3.toAscii(partObj[4]);
+
+    return part;
   }
 }

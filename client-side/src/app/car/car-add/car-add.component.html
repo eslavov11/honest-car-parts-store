@@ -1,3 +1,5 @@
+<h1 class="h1 text-center">Register Car</h1>
+
 <form #f="ngForm" (ngSubmit)="onSubmit(f)">
   <div class="form-group">
     <label for="vin">VIN</label>
@@ -15,9 +17,9 @@
            id="model" name="model" ngModel>
   </div>
   <div class="form-group">
-    <label for="description">Description</label>
-    <input type="text" required="required" class="form-control"
-           id="description" name="description" ngModel>
+    <label>Description</label>
+    <textarea class="form-control"
+              name="description" ngModel rows="3"></textarea>
   </div>
   <div class="form-group">
     <label for="dateOfRegistration">Date of Registration</label>
@@ -31,7 +33,9 @@
            name="myFile" (change)="fileChange(fileupload.files)"/>
   </div>
 
-  <button type="submit" class="btn btn-primary">Register car</button>
+  <button type="submit" class="btn btn-primary float-right">Register car</button>
+  <br/>
+  <br/>
 </form>
 
 

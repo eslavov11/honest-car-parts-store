@@ -1,0 +1,39 @@
+<h1 class="h1 text-center">Add Part</h1>
+
+<form #f="ngForm" (ngSubmit)="onSubmit(f)">
+  <div class="form-group">
+    <label>Part Type</label>
+    <input type="text" name="partType" ngModel required="required" class="form-control">
+  </div>
+  <div class="form-group">
+    <label>Car</label>
+    <select name="car" ngModel class="form-control">
+      <option *ngFor="let car of this.cars" [value]="car.id">
+        {{car.vin}}
+      </option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Description</label>
+    <textarea class="form-control" name="description" ngModel rows="3"></textarea>
+  </div>
+  <div class="form-group">
+    <label>Price (ETH)</label>
+    <input type="text" name="price" ngModel required="required" class="form-control">
+  </div>
+  <div class="form-group">
+    <label>Days For Delivery</label>
+    <input type="number" name="daysForDelivery" ngModel required="required"
+           value="7" class="form-control">
+  </div>
+
+  <div class="form-group">
+    <label>Picture</label><br/>
+    <input type="file" #fileupload [(ngModel)]="picture"
+           name="myFile" (change)="fileChange(fileupload.files)"/>
+  </div>
+
+  <button type="submit" class="btn btn-primary float-right">Add Part</button>
+  <br/>
+  <br/>
+</form>

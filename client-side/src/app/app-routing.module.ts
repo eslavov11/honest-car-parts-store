@@ -27,6 +27,7 @@ const routes: Routes = [
   {path: 'part/add', component: PartAddComponent},
   {path: 'part/detail/:id', component: PartDetailComponent},
   {path: 'part/list', component: PartListComponent},
+  {path: '', component: PartListComponent},
   {path: 'order/detail/:id', component: OrderDetailComponent},
   {path: 'order/edit/:id', component: OrderEditComponent},
   {path: 'order/list', component: OrderListComponent},
